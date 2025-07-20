@@ -31,7 +31,7 @@ PIPE_FREQ = 1500   # milliseconds
 
 clock = pygame.time.Clock()
 font = pygame.font.SysFont(None, 36)
-
+game_over_font = pygame.font.SysFont(None, 72)
 class Bird(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -93,6 +93,7 @@ pygame.time.set_timer(pygame.USEREVENT, PIPE_FREQ)
 
 score = 0
 running = True
+paused = False
 last_time = pygame.time.get_ticks()
 
 while running:
@@ -118,28 +119,62 @@ while running:
     # Check collision
     if not bird.hit and (pygame.sprite.spritecollideany(bird, pipes) or bird.rect.top <= 0 or bird.rect.bottom >= HEIGHT):
         bird.on_hit()
-        pause_timer = pygame.time.get_ticks() + 750  # Pause for 750ms
-
-    if bird.hit and pygame.time.get_ticks() >= pause_timer:
-        running = False
+        pause_timer = pygame.time.get_ticks() + 750# Pause for 750ms
+        paused = False  # Reset paused state
+    # if bird.hit and pygame.time.get_ticks() >= pause_timer:
+    #     running = False
 
 
     # Score: count pipes that go off screen
-    for pipe in list(pipes):  
-        if pipe.rect.right < 0:
-            pipes.remove(pipe)
-            all_sprites.remove(pipe)
-            score += 0.5  # each pipe pair adds 1
-            point_sound.play()
+    if not paused:
+        for pipe in list(pipes):  
+            if pipe.rect.right < 0:
+                pipes.remove(pipe)
+                all_sprites.remove(pipe)
+                score += 0.5  # each pipe pair adds 1
+                point_sound.play()
+
+
+
+
 
     # Draw
     screen.fill(BG_COLOR)
     all_sprites.draw(screen)
+    if bird.hit and pygame.time.get_ticks() >= pause_timer:
+        if not paused:
+            paused = True
+            pygame.time.wait(1000)  # Pause for 1 second
+            
+        # Game Over screen
+        game_over_text = game_over_font.render("GAME OVER", True, (255, 0, 0))
+        final_score_text = font.render(f"Final Score: {int(score)}", True, (0, 0, 0))
+        restart_text = font.render("Press SPACE to play again", True, (0, 0, 0))
+        
+        game_over_rect = game_over_text.get_rect(center=(WIDTH//2, HEIGHT//3))
+        final_score_rect = final_score_text.get_rect(center=(WIDTH//2, HEIGHT//2))
+        restart_rect = restart_text.get_rect(center=(WIDTH//2, 2*HEIGHT//3))
+        
+        screen.blit(game_over_text, game_over_rect)
+        screen.blit(final_score_text, final_score_rect)
+        screen.blit(restart_text, restart_rect)
+        
+        # Handle restart
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_SPACE]:
+            # Reset game state
+            bird = Bird()
+            all_sprites = pygame.sprite.Group(bird)
+            pipes = pygame.sprite.Group()
+            score = 0
+            paused = False
+            last_time = pygame.time.get_ticks()
+            continue
+    else:
+        score_text = font.render(f"Score: {int(score)}", True, (0, 0, 0))
+        screen.blit(score_text, (10, 10))
 
-    score_text = font.render(f"Score: {int(score)}", True, (0, 0, 0))
-    screen.blit(score_text, (10, 10))
     pygame.display.flip()
-
     clock.tick(60)
 
 pygame.quit()
