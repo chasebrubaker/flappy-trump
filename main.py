@@ -108,7 +108,7 @@ while running:
             bird.flap()
             flap_sound.play()
         if event.type == pygame.USEREVENT:
-            pipe_height = random.randint(100, 400)
+            pipe_height = random.randint(130, 400) 
             top = Pipe(WIDTH, pipe_height - PIPE_GAP // 2, True)
             bottom = Pipe(WIDTH, pipe_height + PIPE_GAP // 2, False)
             pipes.add(top, bottom)
