@@ -12,13 +12,6 @@ where %PYTHON_EXE% >nul 2>nul
 if %errorlevel% neq 0 (
     echo Python is not installed.
 
-    set /p INSTALL_CONFIRM="Would you like to install Python %PYTHON_VERSION% now? (Y/N): "
-    if /i "%INSTALL_CONFIRM%" neq "Y" (
-        echo Skipping installation. Cannot proceed without Python.
-        pause
-        exit /b 1
-    )
-
     set /p INSTALL_ALL="Install Python for all users?  Note: will need admin privileges(Y/N): "
     if /i "%INSTALL_ALL%"=="Y" (
         set INSTALL_ARGS=/quiet InstallAllUsers=1 PrependPath=1 Include_test=0
