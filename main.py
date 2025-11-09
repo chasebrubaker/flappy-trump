@@ -85,7 +85,7 @@ class Pipe(pygame.sprite.Sprite):
 
 # Sprite groups
 bird = Bird()
-all_sprites = pygame.sprite.Group(bird)
+all_sprites = pygame.sprite.Group(bird) # type: ignore
 pipes = pygame.sprite.Group()
 
 # Pipe timer
@@ -117,7 +117,7 @@ while running:
     all_sprites.update(dt)
 
     # Check collision
-    if not bird.hit and (pygame.sprite.spritecollideany(bird, pipes) or bird.rect.top <= 0 or bird.rect.bottom >= HEIGHT):
+    if not bird.hit and (pygame.sprite.spritecollideany(bird, pipes) or bird.rect.top <= 0 or bird.rect.bottom >= HEIGHT): # type: ignore
         bird.on_hit()
         pause_timer = pygame.time.get_ticks() + 750# Pause for 750ms
         paused = False  # Reset paused state
@@ -164,7 +164,7 @@ while running:
         if keys[pygame.K_SPACE]:
             # Reset game state
             bird = Bird()
-            all_sprites = pygame.sprite.Group(bird)
+            all_sprites = pygame.sprite.Group(bird) # type: ignore
             pipes = pygame.sprite.Group()
             score = 0
             paused = False
